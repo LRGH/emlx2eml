@@ -105,18 +105,60 @@ def parse_msg(attach_dir, msg, depth):
 
 # When the attachment has no explicit filename, Mail.app generates a name
 # which we want to guess.
+# TODO:
+#   "MimeAttachmentFilename" => "Adjunt de Mail"
+#   "MimeAttachmentFilename" => "Allegato di posta elettronica"
+#   "MimeAttachmentFilename" => "Anexo de E-mail"
+#   "MimeAttachmentFilename" => "Anexo de e‑mail"
+#   "MimeAttachmentFilename" => "Archivo adjunto a un correo"
+#   "MimeAttachmentFilename" => "Archivo adjunto al mensaje"
+#   "MimeAttachmentFilename" => "Brevbilaga"
+#   "MimeAttachmentFilename" => "E-mail privitak"
+#   "MimeAttachmentFilename" => "E-postvedlegg"
+#   "MimeAttachmentFilename" => "Fișier atașat Mail"
+#   "MimeAttachmentFilename" => "Lampiran Mail"
+#   "MimeAttachmentFilename" => "Mail Attachment"
+#   "MimeAttachmentFilename" => "Mail melléklet"
+#   "MimeAttachmentFilename" => "Mail 첨부 파일"
+#   "MimeAttachmentFilename" => "Mail-Anhang"
+#   "MimeAttachmentFilename" => "Mail-bijlage"
+#   "MimeAttachmentFilename" => "Mailová príloha"
+#   "MimeAttachmentFilename" => "Pièce jointe"
+#   "MimeAttachmentFilename" => "Posta İlişiği"
+#   "MimeAttachmentFilename" => "Postbilag"
+#   "MimeAttachmentFilename" => "Příloha pošty"
+#   "MimeAttachmentFilename" => "Sähköpostiliite"
+#   "MimeAttachmentFilename" => "Tệp đính kèm của Mail"
+#   "MimeAttachmentFilename" => "Załącznik poczty"
+#   "MimeAttachmentFilename" => "मेल अटैचमेंट"
+#   "MimeAttachmentFilename" => "קובץ מצורף לדואר"
+#   "MimeAttachmentFilename" => "مرفق البريد"
+#   "MimeAttachmentFilename" => "邮件附件"
+#   "MimeAttachmentFilename" => "郵件附件"
+#   "MimeAttachmentFilename" => "Поштове прикріплення"
+#   "MimeAttachmentFilename" => "Συνημμένο Mail"
+#   "MimeAttachmentFilename" => "Вложенный файл Почты"
+#   "MimeAttachmentFilename" => "ไฟล์แนบเมล"
+#   "MimeAttachmentFilename" => "メールの添付ファイル"
 base_filename = u"Mail Attachment"
 mimetypes.add_type('image/pjpeg', '.jpg', strict=True)
 mimetypes.add_type('image/jpg', '.jpg', strict=True)
+mimetypes.add_type('image/x-png', '', strict=True) # todo: should be '.png' imho
 
+def get_filename(part):
+    file = part.get_filename()
+    mime_type = part.get_content_type()
+    if file is None:
+        file = guess_extension(mime_type)
+    return file
+
+def guess_extension(mime_type):
+    return base_filename + mimetypes.guess_extension(mime_type)
 
 def include_attachment(attach_dir, part, depth):
     if "X-Apple-Content-Length" not in part:
         return
-    file = part.get_filename()
-    mime_type = part.get_content_type()
-    if file is None:
-        file = base_filename + mimetypes.guess_extension(mime_type)
+    file = get_filename(part)
     dirpath = attach_dir + "/" + ".".join([str(_+1) for _ in depth])
     try:
         data = open(dirpath+"/"+file, "rb").read()
