@@ -1,6 +1,8 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
-# Compatible with python3 and python2 (tested with at least 2.4)
+# Compatible with python3 and python2
+# Validated with python >= 2.6
+# Does not work with python 2.4, because of bugs in email.Message
 
 import sys
 import os
